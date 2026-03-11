@@ -545,9 +545,22 @@ async function addClient() {
       date_achat: debut,
       date_fin: fin
     });
-    showToast(`✅ ${prenom} créé avec ${selectedCats.length} abonnement(s) !`);
     await init();
-    switchTab('clients');
+    const lien = `https://t.me/MyTopAssistant_Bot?start=Bonjour`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class='modal-title'>✅ ${prenom} créé !</div>
+      <p style='font-size:13px;color:var(--mut);margin-bottom:16px;line-height:1.6'>
+        Envoyez ce lien à votre client pour accéder à ses formations :
+      </p>
+      <div style='background:var(--s2);border:1px solid var(--brd);
+        border-radius:10px;padding:12px;font-family:var(--mono);
+        font-size:12px;word-break:break-all;margin-bottom:16px;color:var(--acc)'>
+        ${lien}
+      </div>
+      <button class='btn btn-primary' onclick='navigator.clipboard.writeText(\`${lien}\`);showToast("✅ Lien copié !")'>
+        📋 Copier le lien
+      </button>`;
+    document.getElementById('modal').classList.add('open');
   } catch(e) {
     if (e.message.includes('unique') || e.message.includes('23505')) {
       showToast('⚠️ Username déjà existant !');
