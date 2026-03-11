@@ -3,25 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>TopSchool — Mes Formations</title>
+<title>TopSchool — Admin</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root{
-  --bg:#07090f;
-  --s1:#0e1220;
-  --s2:#141827;
-  --brd:rgba(255,255,255,0.07);
-  --acc:#5b8dee;
-  --acc2:#a78bfa;
-  --grn:#34d399;
-  --red:#f87171;
-  --txt:#e2e8f0;
-  --mut:#64748b;
-  --r:14px;
-  --font:'Plus Jakarta Sans',sans-serif;
-  --mono:'DM Mono',monospace;
+  --bg:#0a0a0f;
+  --s1:#111118;
+  --s2:#18181f;
+  --brd:rgba(255,255,255,0.06);
+  --acc:#ff6b35;
+  --acc2:#f7c59f;
+  --blue:#4f8ef7;
+  --grn:#2dd4a0;
+  --red:#ff4d6d;
+  --yel:#ffd166;
+  --txt:#f0f0f5;
+  --mut:#52525b;
+  --r:12px;
+  --font:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -31,342 +33,619 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:10
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%,rgba(91,141,238,.12) 0%,transparent 70%),
-    radial-gradient(ellipse 40% 30% at 90% 90%,rgba(167,139,250,.08) 0%,transparent 60%);
+    radial-gradient(ellipse 60% 40% at 0% 0%,rgba(255,107,53,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 100% 100%,rgba(79,142,247,.06) 0%,transparent 60%);
 }
 
-/* ── HEADER ── */
+/* HEADER */
 header{
   position:sticky;top:0;z-index:100;
-  background:rgba(7,9,15,.92);backdrop-filter:blur(20px);
+  background:rgba(10,10,15,.95);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--brd);
-  height:58px;padding:0 16px;
+  padding:0 16px;height:56px;
   display:flex;align-items:center;gap:12px;
 }
-.logo-wrap{
-  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+.hlogo{
+  width:34px;height:34px;border-radius:8px;flex-shrink:0;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
-  display:flex;align-items:center;justify-content:center;
-  font-size:17px;box-shadow:0 0 20px rgba(91,141,238,.3);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
 }
-.logo-info h1{font-size:15px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
-.logo-info p{font-size:10px;color:var(--mut);font-family:var(--mono)}
-.user-chip{
+.htitle{font-size:15px;font-weight:800;letter-spacing:-.5px}
+.htitle span{color:var(--acc)}
+.hadmin{
   margin-left:auto;
-  background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);
-  color:var(--grn);font-size:11px;font-weight:600;
-  padding:5px 11px;border-radius:20px;
-  font-family:var(--mono);white-space:nowrap;
-  max-width:130px;overflow:hidden;text-overflow:ellipsis;
+  background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);
+  color:var(--acc);font-size:10px;font-weight:600;font-family:var(--mono);
+  padding:4px 10px;border-radius:20px;
 }
 
-/* ── MAIN ── */
-main{padding:16px 14px 48px;position:relative;z-index:1}
+/* TABS */
+.tabs{
+  display:flex;border-bottom:1px solid var(--brd);
+  background:rgba(10,10,15,.95);backdrop-filter:blur(20px);
+  position:sticky;top:56px;z-index:99;
+}
+.tab{
+  flex:1;padding:13px 8px;text-align:center;
+  font-size:11px;font-weight:700;letter-spacing:.5px;
+  color:var(--mut);cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;transition:all .2s;font-family:var(--font);
+}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc)}
 
-/* ── WELCOME ── */
-.welcome{
-  background:var(--s1);border:1px solid var(--brd);
-  border-radius:var(--r);padding:18px;margin-bottom:18px;
-  position:relative;overflow:hidden;
-}
-.welcome::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--acc),var(--acc2),var(--grn));
-}
-.welcome h2{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
-.welcome h2 span{
-  background:linear-gradient(90deg,var(--acc),var(--acc2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.welcome p{font-size:12px;color:var(--mut);line-height:1.5}
+/* MAIN */
+main{padding:16px 14px 60px;position:relative;z-index:1}
 
-/* ── SECTION LABEL ── */
+/* SECTION */
 .sec-label{
-  font-family:var(--mono);font-size:10px;font-weight:500;
-  color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;
+  font-family:var(--mono);font-size:9px;font-weight:500;
+  color:var(--mut);letter-spacing:2px;text-transform:uppercase;
   margin-bottom:10px;display:flex;align-items:center;gap:8px;
 }
 .sec-label::after{content:'';flex:1;height:1px;background:var(--brd)}
 
-/* ── CATEGORY GRID ── */
-.cat-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:10px;margin-bottom:22px;
-}
-.cat-btn{
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.stat{
   background:var(--s1);border:1px solid var(--brd);
-  border-radius:var(--r);padding:16px 12px;
-  cursor:pointer;text-align:left;width:100%;
-  transition:all .2s;position:relative;overflow:hidden;
+  border-radius:var(--r);padding:14px;position:relative;overflow:hidden;
 }
-.cat-btn::before{
-  content:'';position:absolute;inset:0;opacity:0;
-  background:linear-gradient(135deg,rgba(91,141,238,.1),rgba(167,139,250,.1));
-  transition:opacity .2s;
+.stat::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
 }
-.cat-btn:active,.cat-btn.active{
-  border-color:var(--acc);
-  box-shadow:0 0 0 1px rgba(91,141,238,.3),0 8px 24px rgba(91,141,238,.12);
-}
-.cat-btn:active::before,.cat-btn.active::before{opacity:1}
-.cat-ico{font-size:26px;display:block;margin-bottom:8px;line-height:1}
-.cat-name{font-size:12px;font-weight:700;margin-bottom:3px;letter-spacing:-.1px}
-.cat-count{font-size:10px;color:var(--mut);font-family:var(--mono)}
-.cat-arr{
-  position:absolute;top:10px;right:10px;
-  color:var(--mut);font-size:14px;font-weight:700;
-  transition:transform .2s,color .2s;
-}
-.cat-btn.active .cat-arr{transform:rotate(90deg);color:var(--acc)}
+.stat.blue::after{background:var(--blue)}
+.stat.green::after{background:var(--grn)}
+.stat.orange::after{background:var(--acc)}
+.stat.yellow::after{background:var(--yel)}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:2px}
+.stat-lbl{font-size:10px;color:var(--mut);font-family:var(--mono)}
 
-/* ── COURS LIST ── */
-.cours-section{margin-top:4px}
-.cours-header{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:12px;
+/* FORM */
+.form-card{
+  background:var(--s1);border:1px solid var(--brd);
+  border-radius:var(--r);padding:16px;margin-bottom:16px;
 }
-.cours-header-ico{font-size:22px}
-.cours-header-title{font-size:15px;font-weight:700;letter-spacing:-.2px}
-.cours-header-count{
-  margin-left:auto;
-  background:rgba(91,141,238,.1);border:1px solid rgba(91,141,238,.2);
-  color:var(--acc);font-size:10px;font-weight:600;
-  padding:3px 9px;border-radius:20px;font-family:var(--mono);
+.form-row{margin-bottom:12px}
+.form-row label{
+  display:block;font-size:10px;font-family:var(--mono);
+  color:var(--mut);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;
 }
+.form-row input{
+  width:100%;background:var(--s2);border:1px solid var(--brd);
+  border-radius:8px;padding:10px 12px;color:var(--txt);
+  font-family:var(--font);font-size:13px;outline:none;
+  transition:border-color .2s;
+}
+.form-row input:focus{border-color:var(--acc)}
+.form-row input::placeholder{color:var(--mut)}
 
-.cours-list{display:flex;flex-direction:column;gap:8px}
-.cours-item{
-  display:flex;align-items:center;gap:12px;
+/* CATEGORIES SELECT */
+.cats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cat-toggle{
   background:var(--s2);border:1px solid var(--brd);
-  border-radius:12px;padding:12px 14px;
-  text-decoration:none;color:inherit;
-  animation:slideUp .22s ease both;
-  transition:border-color .15s,background .15s;
+  border-radius:8px;padding:10px 8px;
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all .2s;
 }
-.cours-item:active{border-color:var(--acc2);background:rgba(167,139,250,.05)}
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.cours-num{
-  width:32px;height:32px;border-radius:8px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--acc),var(--acc2));
+.cat-toggle.on{
+  border-color:var(--grn);background:rgba(45,212,160,.05);
+}
+.cat-ico{font-size:16px}
+.cat-info{flex:1}
+.cat-name{font-size:11px;font-weight:700}
+.cat-code{font-size:9px;color:var(--mut);font-family:var(--mono)}
+.cat-check{
+  width:18px;height:18px;border-radius:5px;
+  border:1.5px solid var(--brd);
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:12px;font-weight:700;color:#fff;
-  box-shadow:0 4px 12px rgba(91,141,238,.25);
+  font-size:10px;flex-shrink:0;transition:all .2s;
 }
-.cours-info{flex:1;min-width:0}
-.cours-titre{
-  font-size:13px;font-weight:600;letter-spacing:-.1px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;
-}
-.cours-desc{font-size:10.5px;color:var(--mut);line-height:1.4}
-.cours-dl{
-  width:30px;height:30px;border-radius:8px;flex-shrink:0;
-  background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--grn);font-size:14px;
+.cat-toggle.on .cat-check{
+  background:var(--grn);border-color:var(--grn);
 }
 
-/* ── ÉTATS ── */
+/* DATE ROW */
+.date-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+
+/* BTN */
+.btn{
+  width:100%;padding:13px;border-radius:10px;border:none;
+  font-family:var(--font);font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:-.2px;
+}
+.btn-primary{background:var(--acc);color:#fff}
+.btn-primary:active{opacity:.85;transform:scale(.99)}
+.btn-danger{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:var(--red)}
+.btn-success{background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.3);color:var(--grn)}
+
+/* CLIENT LIST */
+.client-card{
+  background:var(--s1);border:1px solid var(--brd);
+  border-radius:var(--r);padding:14px;margin-bottom:8px;
+  cursor:pointer;transition:all .2s;
+}
+.client-card:active{border-color:var(--acc)}
+.client-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.client-avatar{
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--acc2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:800;color:#fff;
+}
+.client-name{font-size:14px;font-weight:700;letter-spacing:-.3px}
+.client-user{font-size:11px;color:var(--mut);font-family:var(--mono)}
+.client-status{
+  margin-left:auto;padding:3px 9px;border-radius:20px;
+  font-size:10px;font-weight:600;font-family:var(--mono);
+}
+.status-actif{background:rgba(45,212,160,.1);color:var(--grn);border:1px solid rgba(45,212,160,.2)}
+.status-inactif{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.2)}
+
+.client-cats{display:flex;flex-wrap:wrap;gap:4px}
+.cat-pill{
+  background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.15);
+  color:var(--blue);font-size:9px;font-weight:600;font-family:var(--mono);
+  padding:2px 7px;border-radius:20px;
+}
+
+/* MODAL */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  align-items:flex-end;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--s1);border:1px solid var(--brd);
+  border-radius:16px 16px 0 0;padding:20px 16px 36px;
+  width:100%;max-height:85vh;overflow-y:auto;
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{
+  width:36px;height:4px;background:var(--mut);
+  border-radius:2px;margin:0 auto 16px;
+}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:16px;letter-spacing:-.4px}
+.modal-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+
+/* LOADING / STATES */
 .loading{
   display:flex;flex-direction:column;align-items:center;
-  padding:80px 20px;gap:16px;color:var(--mut);font-size:13px;
+  padding:60px 20px;gap:14px;color:var(--mut);font-size:12px;font-family:var(--mono);
 }
 .spinner{
-  width:32px;height:32px;
-  border:2.5px solid var(--brd);border-top-color:var(--acc);
+  width:28px;height:28px;
+  border:2px solid var(--brd);border-top-color:var(--acc);
   border-radius:50%;animation:spin .75s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.denied{
-  background:var(--s1);
-  border:1px solid rgba(248,113,113,.15);
-  border-radius:var(--r);padding:36px 20px;text-align:center;margin-top:8px;
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--s2);border:1px solid var(--brd);
+  color:var(--txt);font-size:13px;font-weight:600;font-family:var(--font);
+  padding:12px 20px;border-radius:12px;z-index:300;
+  animation:toastIn .25s ease;white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
-.denied .d-ico{font-size:52px;display:block;margin-bottom:14px}
-.denied h3{font-size:18px;font-weight:800;color:var(--red);margin-bottom:8px;letter-spacing:-.3px}
-.denied p{font-size:13px;color:var(--mut);line-height:1.7;margin-bottom:4px}
-.denied .contact{
-  display:inline-flex;align-items:center;gap:6px;
-  margin-top:18px;background:rgba(248,113,113,.1);
-  border:1px solid rgba(248,113,113,.2);color:var(--red);
-  font-size:13px;font-weight:600;padding:11px 20px;border-radius:10px;
-  text-decoration:none;
-}
-
-.err{
-  background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.15);
-  border-radius:12px;padding:28px 18px;text-align:center;margin-top:8px;
-}
-.err .e-ico{font-size:36px;display:block;margin-bottom:10px}
-.err p{font-size:13px;color:var(--red);line-height:1.6}
-.err code{font-family:var(--mono);font-size:10px;opacity:.6;display:block;margin-top:6px;word-break:break-all}
-.retry{
-  margin-top:14px;background:var(--acc);color:#fff;border:none;
-  border-radius:9px;padding:10px 24px;font-size:13px;font-weight:700;
-  cursor:pointer;font-family:var(--font);
-}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 .empty{text-align:center;padding:40px;color:var(--mut)}
-.empty span{font-size:38px;display:block;margin-bottom:10px}
-.empty p{font-size:13px}
+.empty span{font-size:36px;display:block;margin-bottom:10px}
+.empty p{font-size:12px;font-family:var(--mono)}
 
 .fade{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ACCESS DENIED */
+.denied{
+  display:flex;flex-direction:column;align-items:center;
+  padding:80px 20px;text-align:center;gap:12px;
+}
+.denied span{font-size:52px}
+.denied h2{font-size:20px;font-weight:800;color:var(--red)}
+.denied p{font-size:13px;color:var(--mut);line-height:1.6}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo-wrap">📚</div>
-  <div class="logo-info"><h1>TopSchool</h1><p>Centre de Formation</p></div>
-  <div class="user-chip" id="chip">...</div>
+  <div class="hlogo">⚙️</div>
+  <div>
+    <div class="htitle">Top<span>School</span></div>
+  </div>
+  <div class="hadmin">ADMIN</div>
 </header>
+<div class="tabs" id="tabs">
+  <button class="tab active" onclick="switchTab('clients')">👥 Clients</button>
+  <button class="tab" onclick="switchTab('add')">➕ Nouveau</button>
+  <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
+</div>
 <main id="app">
   <div class="loading"><div class="spinner"></div><span>Chargement...</span></div>
 </main>
 
-<script>
-const SB   = 'https://fpjhfwkthujyromafjqd.supabase.co';
-const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwamhmd2t0aHVqeXJvbWFmanFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTUyODAsImV4cCI6MjA4ODczMTI4MH0.7jgCPitW2XAa3wceykEyhQx0QLPfFl4anUSFdihIaTE';
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <div class="modal-handle"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
 
-// ── Telegram init ──
+<script>
+const SB  = 'https://fpjhfwkthujyromafjqd.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwamhmd2t0aHVqeXJvbWFmanFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTUyODAsImV4cCI6MjA4ODczMTI4MH0.7jgCPitW2XAa3wceykEyhQx0QLPfFl4anUSFdihIaTE';
+
+// Admin usernames autorisés
+const ADMINS = ['Br_Solution', 'br_solution'];
+
 const tg  = window.Telegram?.WebApp;
 const tgU = tg?.initDataUnsafe?.user;
-// username sans @, fallback demo
-const USERNAME = (tgU?.username || 'demo').toLowerCase().replace('@','');
-const PRENOM   = tgU?.first_name || 'Apprenant';
+const params = new URLSearchParams(window.location.search);
+const ME = (params.get('u') || tgU?.username || 'demo').replace('@','');
 
 if (tg) { tg.ready(); tg.expand(); }
-document.getElementById('chip').textContent = '@' + USERNAME;
 
-let CATS = [], COURS = [], CLIENT = null, ACTIVE_CAT = null;
+let CLIENTS = [], CATS = [], CURRENT_TAB = 'clients';
 
-// ── REST Supabase ──
-async function sb(table, qs) {
-  const r = await fetch(`${SB}/rest/v1/${table}?${qs}`, {
+// ── REST ──
+async function sb(method, table, qs = '', body = null) {
+  const opts = {
+    method,
     headers:{
       'apikey': KEY,
       'Authorization': `Bearer ${KEY}`,
-      'Accept': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : ''
     }
-  });
-  if (!r.ok) throw new Error(`${table} HTTP ${r.status}`);
-  return r.json();
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(`${SB}/rest/v1/${table}${qs ? '?'+qs : ''}`, opts);
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : [];
 }
 
 // ── Init ──
 async function init() {
   try {
-    // 1. Vérifier client par username
-    const clients = await sb('clients',
-      `username=eq.${USERNAME}&actif=eq.true&select=id,prenom,actif`);
+    // Vérif admin
+    const adminCheck = await sb('GET', 'clients', `username=eq.${ME}&select=id`);
+    if (!ADMINS.includes(ME) && !adminCheck.length) {
+      renderDenied(); return;
+    }
 
-    if (!clients.length) { renderDenied(); return; }
-    CLIENT = clients[0];
-
-    // 2. Récupérer abonnements actifs
-    const abos = await sb('abonnements',
-      `client_id=eq.${CLIENT.id}&actif=eq.true&select=categorie`);
-
-    if (!abos.length) { renderDenied(); return; }
-    const myCats = abos.map(a => a.categorie);
-
-    // 3. Récupérer catégories + tous les cours en parallèle
-    const [allCats, allCours] = await Promise.all([
-      sb('categories', 'select=code,nom,icone,ordre&order=ordre'),
-      sb('cours', `categorie=in.(${myCats.join(',')})&select=*&order=categorie,ordre`)
+    const [clients, cats] = await Promise.all([
+      sb('GET', 'clients', 'select=id,username,prenom,telephone,actif&order=prenom'),
+      sb('GET', 'categories', 'select=code,nom,icone,ordre&order=ordre')
     ]);
 
-    CATS  = allCats.filter(c => myCats.includes(c.code));
-    COURS = allCours;
-    renderMain();
+    // Récupère abonnements pour chaque client
+    const abos = await sb('GET', 'abonnements', 'select=client_id,categorie,actif&actif=eq.true');
 
+    CLIENTS = clients.map(c => ({
+      ...c,
+      categories: abos.filter(a => a.client_id === c.id).map(a => a.categorie)
+    }));
+    CATS = cats;
+
+    renderTab(CURRENT_TAB);
   } catch(e) {
-    renderErr(e.message);
+    document.getElementById('app').innerHTML = `<div class="denied"><span>⚠️</span><h2>Erreur</h2><p>${e.message}</p></div>`;
   }
 }
 
-// ── Render principal ──
-function renderMain() {
-  const nom = CLIENT?.prenom || PRENOM;
-  document.getElementById('app').innerHTML = `
-    <div class="welcome fade">
-      <h2>Bienvenue, <span>${nom}</span> 👋</h2>
-      <p>Sélectionnez une catégorie pour accéder à vos formations.</p>
-    </div>
-    <div class="sec-label">Mes catégories (${CATS.length})</div>
-    <div class="cat-grid" id="cat-grid"></div>
-    <div id="cours-zone"></div>`;
-  drawCats();
+// ── Switch Tab ──
+function switchTab(t) {
+  CURRENT_TAB = t;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['clients','add','stats'][i] === t);
+  });
+  renderTab(t);
 }
 
-function drawCats() {
-  document.getElementById('cat-grid').innerHTML = CATS.map(c => {
-    const n = COURS.filter(x => x.categorie === c.code).length;
-    const on = ACTIVE_CAT === c.code;
-    return `<button class="cat-btn${on?' active':''}" onclick="pick('${c.code}')">
-      <span class="cat-ico">${c.icone||'📂'}</span>
-      <div class="cat-name">${c.nom}</div>
-      <div class="cat-count">${n} vidéo${n>1?'s':''}</div>
-      <span class="cat-arr">›</span>
-    </button>`;
-  }).join('');
+function renderTab(t) {
+  if (t === 'clients') renderClients();
+  else if (t === 'add') renderAdd();
+  else renderStats();
 }
 
-function pick(code) {
-  ACTIVE_CAT = ACTIVE_CAT === code ? null : code;
-  drawCats();
-  const zone = document.getElementById('cours-zone');
-  if (!ACTIVE_CAT) { zone.innerHTML = ''; return; }
-
-  const list = COURS.filter(c => c.categorie === code);
-  const cat  = CATS.find(c => c.code === code);
-
-  if (!list.length) {
-    zone.innerHTML = '<div class="empty"><span>📭</span><p>Aucun cours disponible.</p></div>';
+// ── CLIENTS ──
+function renderClients() {
+  const app = document.getElementById('app');
+  if (!CLIENTS.length) {
+    app.innerHTML = '<div class="empty"><span>👥</span><p>Aucun client</p></div>';
     return;
   }
 
-  zone.innerHTML = `
-    <div class="cours-header fade">
-      <span class="cours-header-ico">${cat?.icone||'📂'}</span>
-      <span class="cours-header-title">${cat?.nom||code}</span>
-      <span class="cours-header-count">${list.length} vidéo${list.length>1?'s':''}</span>
-    </div>
-    <div class="cours-list">
-      ${list.map((c,i) => `
-        <a class="cours-item" href="${c.lien_drive}" target="_blank"
-           style="animation-delay:${i*0.06}s">
-          <div class="cours-num">${String(i+1).padStart(2,'0')}</div>
-          <div class="cours-info">
-            <div class="cours-titre">${c.titre}</div>
-            <div class="cours-desc">${c.description || 'Formation vidéo'}</div>
+  app.innerHTML = `
+    <div class="sec-label">Tous les clients (${CLIENTS.length})</div>
+    ${CLIENTS.map(c => `
+      <div class="client-card fade" onclick="openClient('${c.id}')">
+        <div class="client-top">
+          <div class="client-avatar">${(c.prenom||'?')[0].toUpperCase()}</div>
+          <div>
+            <div class="client-name">${c.prenom}</div>
+            <div class="client-user">@${c.username}</div>
           </div>
-          <div class="cours-dl">⬇</div>
-        </a>`).join('')}
+          <div class="client-status ${c.actif ? 'status-actif' : 'status-inactif'}">
+            ${c.actif ? '✓ actif' : '✗ inactif'}
+          </div>
+        </div>
+        <div class="client-cats">
+          ${c.categories.length
+            ? c.categories.map(cat => `<span class="cat-pill">${cat}</span>`).join('')
+            : `<span style="font-size:11px;color:var(--mut)">Aucun abonnement</span>`
+          }
+        </div>
+      </div>
+    `).join('')}`;
+}
+
+// ── OPEN CLIENT MODAL ──
+function openClient(id) {
+  const c = CLIENTS.find(x => x.id === id);
+  if (!c) return;
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-title">${c.prenom} — @${c.username}</div>
+
+    <div class="sec-label" style="margin-bottom:10px">Abonnements actifs</div>
+    <div class="cats-grid" id="modal-cats">
+      ${CATS.map(cat => {
+        const on = c.categories.includes(cat.code);
+        return `
+          <div class="cat-toggle ${on?'on':''}" id="toggle-${cat.code}" onclick="toggleCat('${id}','${cat.code}',this)">
+            <span class="cat-ico">${cat.icone||'📂'}</span>
+            <div class="cat-info">
+              <div class="cat-name">${cat.nom}</div>
+              <div class="cat-code">${cat.code}</div>
+            </div>
+            <div class="cat-check">${on?'✓':''}</div>
+          </div>`;
+      }).join('')}
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ${c.actif ? 'btn-danger' : 'btn-success'}"
+        onclick="toggleClientStatus('${id}','${c.actif}')">
+        ${c.actif ? '🔴 Désactiver le compte' : '🟢 Activer le compte'}
+      </button>
     </div>`;
 
-  setTimeout(() => zone.scrollIntoView({behavior:'smooth',block:'start'}), 80);
-  if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+  document.getElementById('modal').classList.add('open');
+}
+
+// ── TOGGLE CAT ──
+async function toggleCat(clientId, catCode, el) {
+  const c = CLIENTS.find(x => x.id === clientId);
+  const isOn = el.classList.contains('on');
+
+  try {
+    if (isOn) {
+      // Désactiver
+      await sb('PATCH', 'abonnements',
+        `client_id=eq.${clientId}&categorie=eq.${catCode}`,
+        { actif: false });
+      c.categories = c.categories.filter(x => x !== catCode);
+      el.classList.remove('on');
+      el.querySelector('.cat-check').textContent = '';
+    } else {
+      // Activer ou créer
+      const existing = await sb('GET', 'abonnements',
+        `client_id=eq.${clientId}&categorie=eq.${catCode}&select=id`);
+      if (existing.length) {
+        await sb('PATCH', 'abonnements',
+          `client_id=eq.${clientId}&categorie=eq.${catCode}`,
+          { actif: true });
+      } else {
+        await sb('POST', 'abonnements', '', {
+          client_id: clientId,
+          categorie: catCode,
+          actif: true,
+          date_fin: '2026-12-31'
+        });
+      }
+      c.categories.push(catCode);
+      el.classList.add('on');
+      el.querySelector('.cat-check').textContent = '✓';
+    }
+    showToast(isOn ? `❌ ${catCode} désactivé` : `✅ ${catCode} activé`);
+  } catch(e) {
+    showToast('⚠️ Erreur : ' + e.message);
+  }
+}
+
+// ── TOGGLE CLIENT STATUS ──
+async function toggleClientStatus(id, currentActif) {
+  const newActif = currentActif === 'true' ? false : true;
+  try {
+    await sb('PATCH', 'clients', `id=eq.${id}`, { actif: newActif });
+    const c = CLIENTS.find(x => x.id === id);
+    c.actif = newActif;
+    showToast(newActif ? '✅ Compte activé' : '🔴 Compte désactivé');
+    closeModal();
+    renderClients();
+  } catch(e) {
+    showToast('⚠️ Erreur');
+  }
+}
+
+// ── ADD CLIENT ──
+function renderAdd() {
+  document.getElementById('app').innerHTML = `
+    <div class="sec-label">Informations client</div>
+    <div class="form-card fade">
+      <div class="form-row">
+        <label>Prénom</label>
+        <input type="text" id="inp-prenom" placeholder="Ex: Ahmed">
+      </div>
+      <div class="form-row">
+        <label>Username Telegram (sans @)</label>
+        <input type="text" id="inp-username" placeholder="Ex: Ahmed_DZ">
+      </div>
+      <div class="form-row">
+        <label>Téléphone</label>
+        <input type="tel" id="inp-tel" placeholder="Ex: 0656371202">
+      </div>
+    </div>
+
+    <div class="sec-label">Abonnements</div>
+    <div class="form-card fade">
+      <div class="cats-grid" id="new-cats">
+        ${CATS.map(cat => `
+          <div class="cat-toggle" id="new-${cat.code}" onclick="this.classList.toggle('on');this.querySelector('.cat-check').textContent=this.classList.contains('on')?'✓':''">
+            <span class="cat-ico">${cat.icone||'📂'}</span>
+            <div class="cat-info">
+              <div class="cat-name">${cat.nom}</div>
+              <div class="cat-code">${cat.code}</div>
+            </div>
+            <div class="cat-check"></div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="sec-label">Durée abonnement</div>
+    <div class="form-card fade">
+      <div class="date-row">
+        <div class="form-row" style="margin:0">
+          <label>Date début</label>
+          <input type="date" id="inp-debut" value="${new Date().toISOString().slice(0,10)}">
+        </div>
+        <div class="form-row" style="margin:0">
+          <label>Date fin</label>
+          <input type="date" id="inp-fin" value="${new Date(Date.now()+365*864e5).toISOString().slice(0,10)}">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="addClient()">➕ Créer le client</button>`;
+}
+
+// ── ADD CLIENT ACTION ──
+async function addClient() {
+  const prenom   = document.getElementById('inp-prenom').value.trim();
+  const username = document.getElementById('inp-username').value.trim().replace('@','');
+  const tel      = document.getElementById('inp-tel').value.trim();
+  const debut    = document.getElementById('inp-debut').value;
+  const fin      = document.getElementById('inp-fin').value;
+
+  if (!prenom || !username) {
+    showToast('⚠️ Prénom et username obligatoires !');
+    return;
+  }
+
+  const selectedCats = CATS.filter(cat =>
+    document.getElementById('new-'+cat.code)?.classList.contains('on')
+  ).map(c => c.code);
+
+  try {
+    // Créer client
+    const newClients = await sb('POST', 'clients', '', {
+      username, prenom, telephone: tel, actif: true
+    });
+    const newClient = Array.isArray(newClients) ? newClients[0] : newClients;
+
+    // Créer abonnements
+    for (const cat of selectedCats) {
+      await sb('POST', 'abonnements', '', {
+        client_id: newClient.id,
+        categorie: cat,
+        date_achat: debut,
+        date_fin: fin,
+        actif: true
+      });
+    }
+
+    CLIENTS.push({ ...newClient, categories: selectedCats });
+    showToast(`✅ ${prenom} créé avec ${selectedCats.length} abonnement(s) !`);
+    switchTab('clients');
+  } catch(e) {
+    if (e.message.includes('unique')) {
+      showToast('⚠️ Username déjà existant !');
+    } else {
+      showToast('⚠️ Erreur : ' + e.message);
+    }
+  }
+}
+
+// ── STATS ──
+function renderStats() {
+  const actifs = CLIENTS.filter(c => c.actif).length;
+  const inactifs = CLIENTS.filter(c => !c.actif).length;
+  const totalAbos = CLIENTS.reduce((s, c) => s + c.categories.length, 0);
+
+  const catStats = CATS.map(cat => ({
+    ...cat,
+    count: CLIENTS.filter(c => c.categories.includes(cat.code)).length
+  })).sort((a,b) => b.count - a.count);
+
+  document.getElementById('app').innerHTML = `
+    <div class="sec-label">Vue générale</div>
+    <div class="stats fade">
+      <div class="stat blue">
+        <div class="stat-val">${CLIENTS.length}</div>
+        <div class="stat-lbl">Total clients</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-val">${actifs}</div>
+        <div class="stat-lbl">Actifs</div>
+      </div>
+      <div class="stat orange">
+        <div class="stat-val">${totalAbos}</div>
+        <div class="stat-lbl">Abonnements</div>
+      </div>
+      <div class="stat yellow">
+        <div class="stat-val">${inactifs}</div>
+        <div class="stat-lbl">Inactifs</div>
+      </div>
+    </div>
+
+    <div class="sec-label">Par catégorie</div>
+    ${catStats.map(cat => `
+      <div class="form-card fade" style="margin-bottom:8px;padding:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">${cat.icone||'📂'}</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">${cat.nom}</div>
+            <div style="background:var(--s2);border-radius:4px;height:6px;overflow:hidden">
+              <div style="background:var(--blue);height:100%;width:${CLIENTS.length ? (cat.count/CLIENTS.length*100) : 0}%;transition:width .5s"></div>
+            </div>
+          </div>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue)">${cat.count}</span>
+        </div>
+      </div>`).join('')}`;
+}
+
+// ── MODAL ──
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  toastTimer = setTimeout(() => t.remove(), 2800);
 }
 
 function renderDenied() {
   document.getElementById('app').innerHTML = `
-    <div class="denied fade">
-      <span class="d-ico">🔒</span>
-      <h3>Accès non autorisé</h3>
-      <p>Votre compte <strong>@${USERNAME}</strong> n'est pas enregistré<br>ou votre abonnement a expiré.</p>
-      <p style="margin-top:8px">Contactez-nous pour vous inscrire :</p>
-      <a href="tel:0656371202" class="contact">📞 0656 37 12 02</a>
-    </div>`;
-}
-
-function renderErr(msg) {
-  document.getElementById('app').innerHTML = `
-    <div class="err fade">
-      <span class="e-ico">⚠️</span>
-      <p>Erreur de connexion</p>
-      <code>${msg}</code>
-      <button class="retry" onclick="init()">🔄 Réessayer</button>
+    <div class="denied">
+      <span>🔒</span>
+      <h2>Accès refusé</h2>
+      <p>Cette interface est réservée aux administrateurs.<br>@${ME} n'a pas les droits.</p>
     </div>`;
 }
 
