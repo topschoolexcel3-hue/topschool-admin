@@ -316,7 +316,10 @@ async function sb(method, table, qs = '', body = null) {
 async function n8n(action, data) {
   const r = await fetch(N8N, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'x-secret': 'TopSchool2026!'
+    },
     body: JSON.stringify({ action, data })
   });
   if (!r.ok) throw new Error('N8N erreur ' + r.status);
