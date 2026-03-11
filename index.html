@@ -281,6 +281,9 @@ const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 // Admin usernames autorisés
 const ADMINS = ['Br_Solution', 'Br_solution', 'br_solution'];
 
+// N8N Webhook URL (écriture sécurisée)
+const N8N = 'https://topschool.duckdns.org/webhook/topschool-admin';
+
 const tg  = window.Telegram?.WebApp;
 const tgU = tg?.initDataUnsafe?.user;
 const params = new URLSearchParams(window.location.search);
@@ -309,11 +312,22 @@ async function sb(method, table, qs = '', body = null) {
   return txt ? JSON.parse(txt) : [];
 }
 
+// ── N8N Write (sécurisé) ──
+async function n8n(action, data) {
+  const r = await fetch(N8N, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, data })
+  });
+  if (!r.ok) throw new Error('N8N erreur ' + r.status);
+  return r.json();
+}
+
 // ── Init ──
 async function init() {
   try {
     // Vérif admin
-   const adminCheck = await sb('GET', 'clients', `username=ilike.${ME}&select=id`);
+    const adminCheck = await sb('GET', 'clients', `username=eq.${ME}&select=id`);
     if (!ADMINS.includes(ME) && !adminCheck.length) {
       renderDenied(); return;
     }
@@ -425,30 +439,12 @@ async function toggleCat(clientId, catCode, el) {
   const isOn = el.classList.contains('on');
 
   try {
+    await n8n('toggle_abo', { client_id: clientId, categorie: catCode, actif: !isOn });
     if (isOn) {
-      // Désactiver
-      await sb('PATCH', 'abonnements',
-        `client_id=eq.${clientId}&categorie=eq.${catCode}`,
-        { actif: false });
       c.categories = c.categories.filter(x => x !== catCode);
       el.classList.remove('on');
       el.querySelector('.cat-check').textContent = '';
     } else {
-      // Activer ou créer
-      const existing = await sb('GET', 'abonnements',
-        `client_id=eq.${clientId}&categorie=eq.${catCode}&select=id`);
-      if (existing.length) {
-        await sb('PATCH', 'abonnements',
-          `client_id=eq.${clientId}&categorie=eq.${catCode}`,
-          { actif: true });
-      } else {
-        await sb('POST', 'abonnements', '', {
-          client_id: clientId,
-          categorie: catCode,
-          actif: true,
-          date_fin: '2026-12-31'
-        });
-      }
       c.categories.push(catCode);
       el.classList.add('on');
       el.querySelector('.cat-check').textContent = '✓';
@@ -463,7 +459,7 @@ async function toggleCat(clientId, catCode, el) {
 async function toggleClientStatus(id, currentActif) {
   const newActif = currentActif === 'true' ? false : true;
   try {
-    await sb('PATCH', 'clients', `id=eq.${id}`, { actif: newActif });
+    await n8n('toggle_client', { id, actif: newActif });
     const c = CLIENTS.find(x => x.id === id);
     c.actif = newActif;
     showToast(newActif ? '✅ Compte activé' : '🔴 Compte désactivé');
@@ -543,28 +539,17 @@ async function addClient() {
   ).map(c => c.code);
 
   try {
-    // Créer client
-    const newClients = await sb('POST', 'clients', '', {
-      username, prenom, telephone: tel, actif: true
+    await n8n('create_client', {
+      username, prenom, telephone: tel,
+      categories: selectedCats,
+      date_achat: debut,
+      date_fin: fin
     });
-    const newClient = Array.isArray(newClients) ? newClients[0] : newClients;
-
-    // Créer abonnements
-    for (const cat of selectedCats) {
-      await sb('POST', 'abonnements', '', {
-        client_id: newClient.id,
-        categorie: cat,
-        date_achat: debut,
-        date_fin: fin,
-        actif: true
-      });
-    }
-
-    CLIENTS.push({ ...newClient, categories: selectedCats });
     showToast(`✅ ${prenom} créé avec ${selectedCats.length} abonnement(s) !`);
+    await init();
     switchTab('clients');
   } catch(e) {
-    if (e.message.includes('unique')) {
+    if (e.message.includes('unique') || e.message.includes('23505')) {
       showToast('⚠️ Username déjà existant !');
     } else {
       showToast('⚠️ Erreur : ' + e.message);
