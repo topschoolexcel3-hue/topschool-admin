@@ -313,7 +313,7 @@ async function sb(method, table, qs = '', body = null) {
 async function init() {
   try {
     // Vérif admin
-    const adminCheck = await sb('GET', 'clients', `username=eq.${ME}&select=id`);
+   const adminCheck = await sb('GET', 'clients', `username=ilike.${ME}&select=id`);
     if (!ADMINS.includes(ME) && !adminCheck.length) {
       renderDenied(); return;
     }
