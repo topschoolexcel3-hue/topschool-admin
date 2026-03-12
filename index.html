@@ -262,6 +262,7 @@ main{padding:16px 14px 60px;position:relative;z-index:1}
   <button class="tab active" onclick="switchTab('clients')">👥 Clients</button>
   <button class="tab" onclick="switchTab('add')">➕ Nouveau</button>
   <button class="tab" onclick="switchTab('cours')">🎬 Cours</button>
+  <button class="tab" onclick="switchTab('cats')">📂 Cats</button>
   <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
 </div>
 <main id="app">
@@ -360,7 +361,7 @@ async function init() {
 function switchTab(t) {
   CURRENT_TAB = t;
   document.querySelectorAll('.tab').forEach((el, i) => {
-    el.classList.toggle('active', ['clients','add','cours','stats'][i] === t);
+    el.classList.toggle('active', ['clients','add','cours','cats','stats'][i] === t);
   });
   renderTab(t);
 }
@@ -369,6 +370,7 @@ function renderTab(t) {
   if (t === 'clients') renderClients();
   else if (t === 'add') renderAdd();
   else if (t === 'cours') renderCours();
+  else if (t === 'cats') renderCategories();
   else renderStats();
 }
 
@@ -575,6 +577,93 @@ async function addClient() {
   }
 }
 
+
+
+// ── CATEGORIES ──
+function renderCategories() {
+  const app = document.getElementById('app');
+
+  app.innerHTML = `
+    <div class="sec-label">Catégories (${CATS.length})</div>
+    ${CATS.map(cat => `
+      <div class="client-card fade">
+        <div class="client-top">
+          <div class="client-avatar">${cat.icone||'📂'}</div>
+          <div>
+            <div class="client-name">${cat.nom}</div>
+            <div class="client-user" style="font-family:var(--mono)">${cat.code}</div>
+          </div>
+          <button onclick="deleteCategorie('${cat.code}','${cat.nom}')"
+            style="margin-left:auto;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);
+            color:var(--red);border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer">
+            🗑️
+          </button>
+        </div>
+      </div>`).join('')}
+    <button class="btn btn-primary" style="margin-top:8px" onclick="openAddCategorie()">
+      ➕ Ajouter une catégorie
+    </button>`;
+}
+
+function openAddCategorie() {
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-title">➕ Nouvelle Catégorie</div>
+    <div class="form-row">
+      <label>Code (unique, majuscules)</label>
+      <input type="text" id="nc-code" placeholder="Ex: DESIGN" 
+        oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <div class="form-row">
+      <label>Nom</label>
+      <input type="text" id="nc-nom" placeholder="Ex: Design Graphique">
+    </div>
+    <div class="form-row">
+      <label>Icône (emoji)</label>
+      <input type="text" id="nc-icone" placeholder="Ex: 🎨">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addCategorie()">
+        ➕ Créer
+      </button>
+    </div>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+async function addCategorie() {
+  const code  = document.getElementById('nc-code').value.trim().toUpperCase();
+  const nom   = document.getElementById('nc-nom').value.trim();
+  const icone = document.getElementById('nc-icone').value.trim() || '📂';
+
+  if (!code || !nom) {
+    showToast('⚠️ Code et nom obligatoires !');
+    return;
+  }
+
+  try {
+    await n8n('create_categorie', {
+      code, nom, icone,
+      ordre: CATS.length + 1
+    });
+    showToast('✅ Catégorie créée !');
+    closeModal();
+    await init();
+    renderCategories();
+  } catch(e) {
+    showToast('⚠️ Erreur : ' + e.message);
+  }
+}
+
+async function deleteCategorie(code, nom) {
+  if (!confirm('Supprimer "' + nom + '" ? Tous les cours associés seront perdus !')) return;
+  try {
+    await n8n('delete_categorie', { code });
+    showToast('🗑️ Catégorie supprimée !');
+    await init();
+    renderCategories();
+  } catch(e) {
+    showToast('⚠️ Erreur : ' + e.message);
+  }
+}
 
 // ── COURS ──
 let ALL_COURS = [];
