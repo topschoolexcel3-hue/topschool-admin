@@ -261,6 +261,7 @@ main{padding:16px 14px 60px;position:relative;z-index:1}
 <div class="tabs" id="tabs">
   <button class="tab active" onclick="switchTab('clients')">👥 Clients</button>
   <button class="tab" onclick="switchTab('add')">➕ Nouveau</button>
+  <button class="tab" onclick="switchTab('cours')">🎬 Cours</button>
   <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
 </div>
 <main id="app">
@@ -359,7 +360,7 @@ async function init() {
 function switchTab(t) {
   CURRENT_TAB = t;
   document.querySelectorAll('.tab').forEach((el, i) => {
-    el.classList.toggle('active', ['clients','add','stats'][i] === t);
+    el.classList.toggle('active', ['clients','add','cours','stats'][i] === t);
   });
   renderTab(t);
 }
@@ -367,6 +368,7 @@ function switchTab(t) {
 function renderTab(t) {
   if (t === 'clients') renderClients();
   else if (t === 'add') renderAdd();
+  else if (t === 'cours') renderCours();
   else renderStats();
 }
 
@@ -570,6 +572,114 @@ async function addClient() {
     } else {
       showToast('⚠️ Erreur : ' + e.message);
     }
+  }
+}
+
+
+// ── COURS ──
+let ALL_COURS = [];
+
+async function renderCours() {
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="loading"><div class="spinner"></div><span>Chargement...</span></div>';
+
+  try {
+    ALL_COURS = await sb('GET', 'cours', 'select=*&order=categorie,ordre');
+  } catch(e) {
+    app.innerHTML = `<div class="err"><span class="e-ico">⚠️</span><p>${e.message}</p></div>`;
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="sec-label">Tous les cours (${ALL_COURS.length})</div>
+    ${CATS.map(cat => {
+      const list = ALL_COURS.filter(c => c.categorie === cat.code);
+      return `
+        <div class="form-card fade" style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <span style="font-size:18px">${cat.icone||'📂'}</span>
+            <span style="font-size:13px;font-weight:700">${cat.nom}</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--blue)">${list.length} cours</span>
+          </div>
+          ${list.map(c => `
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--brd)">
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:600">${c.titre}</div>
+                <div style="font-size:10px;color:var(--mut);font-family:var(--mono)">${c.lien_drive.slice(0,40)}...</div>
+              </div>
+              <button onclick="deleteCours('${c.id}','${c.titre}')" 
+                style="background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);
+                color:var(--red);border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer">
+                🗑️
+              </button>
+            </div>`).join('')}
+          <button class="btn btn-primary" style="margin-top:12px;padding:10px"
+            onclick="openAddCours('${cat.code}')">
+            ➕ Ajouter un cours
+          </button>
+        </div>`;
+    }).join('')}`;
+}
+
+function openAddCours(catCode) {
+  const cat = CATS.find(c => c.code === catCode);
+  const ordre = ALL_COURS.filter(c => c.categorie === catCode).length + 1;
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-title">➕ Nouveau cours — ${cat?.nom || catCode}</div>
+    <div class="form-row">
+      <label>Titre</label>
+      <input type="text" id="nc-titre" placeholder="Ex: Introduction à Excel">
+    </div>
+    <div class="form-row">
+      <label>Lien Google Drive</label>
+      <input type="url" id="nc-lien" placeholder="https://drive.google.com/...">
+    </div>
+    <div class="form-row">
+      <label>Description (optionnel)</label>
+      <input type="text" id="nc-desc" placeholder="Ex: Les bases d'Excel">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addCours('${catCode}',${ordre})">
+        ➕ Ajouter
+      </button>
+    </div>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+async function addCours(catCode, ordre) {
+  const titre = document.getElementById('nc-titre').value.trim();
+  const lien  = document.getElementById('nc-lien').value.trim();
+  const desc  = document.getElementById('nc-desc').value.trim();
+
+  if (!titre || !lien) {
+    showToast('⚠️ Titre et lien obligatoires !');
+    return;
+  }
+
+  try {
+    await n8n('create_cours', {
+      categorie: catCode,
+      titre, lien_drive: lien,
+      description: desc,
+      ordre
+    });
+    showToast('✅ Cours ajouté !');
+    closeModal();
+    renderCours();
+  } catch(e) {
+    showToast('⚠️ Erreur : ' + e.message);
+  }
+}
+
+async function deleteCours(id, titre) {
+  if (!confirm('Supprimer "' + titre + '" ?')) return;
+  try {
+    await n8n('delete_cours', { id });
+    showToast('🗑️ Cours supprimé !');
+    renderCours();
+  } catch(e) {
+    showToast('⚠️ Erreur : ' + e.message);
   }
 }
 
